@@ -10,7 +10,7 @@ main_sta_path = './main_sta.py'
 bench_dir = '../bench'
 
 # Path to the NLDM library file
-nldm_lib_path = '../ample_NLDM.lib'
+nldm_lib_path = '../sample_NLDM.lib'
 
 # Main output directory where results will be stored
 output_dir = '..//output'

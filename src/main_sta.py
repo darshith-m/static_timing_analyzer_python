@@ -40,12 +40,12 @@ class STA():
     # Function to lookup indexes from 
     def lookup_index(self, node, input_slew, output_capacitance):        
         node_type = self.netlist[node].type        
-        # If the input slew is beyong lookup indexes, set the row1 and row2 to the last 2 rows of the lookup table
+        # If the input slew is beyond lookup indexes, set the row1 and row2 to the last 2 rows of the lookup table
         if input_slew > self.std_cell[node_type].input_slew[-1]:
             list_length = len(self.std_cell[node_type].input_slew)
             row1 = list_length - 2
             row2 = list_length - 1 
-        # If the output capacitance is beyong lookup indexes, set the column1 and column2 to the last 2 columns of the lookup table
+        # If the output capacitance is beyond lookup indexes, set the column1 and column2 to the last 2 columns of the lookup table
         if output_capacitance > self.std_cell[node_type].output_load[-1]:
             list_length = len(self.std_cell[node_type].output_load)
             column1 = list_length - 2
