@@ -4,19 +4,19 @@ import shutil
 import time
 
 # Path to the main_sta.py script
-main_sta_path = 'C:/Users/Darshith/Documents/Codes/VLSI_Design_Automation_Projects/Project1/Phase2/src/main_sta.py'
+main_sta_path = './main_sta.py'
 
 # Directory containing the .bench files
-bench_dir = 'C:/Users/Darshith/Documents/Codes/VLSI_Design_Automation_Projects/Project1/'
+bench_dir = '../bench'
 
 # Path to the NLDM library file
-nldm_lib_path = 'C:/Users/Darshith/Documents/Codes/VLSI_Design_Automation_Projects/Project1/sample_NLDM.lib'
+nldm_lib_path = '../ample_NLDM.lib'
 
 # Main output directory where results will be stored
-output_dir = 'C:/Users/Darshith/Documents/Codes/VLSI_Design_Automation_Projects/Project1/output'
+output_dir = '..//output'
 
 # Path to the directory whose contents you want to copy
-source_dir = 'C:/Users/Darshith/Documents/Codes/VLSI_Design_Automation_Projects/Project1/Phase2/output'
+source_dir = './output'
 
 # Create the main output directory if it doesn't exist
 if not os.path.exists(output_dir):
