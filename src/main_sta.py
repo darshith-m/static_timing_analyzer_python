@@ -5,7 +5,6 @@ import random
 import os
 import main_parser
 
-
 class STA():
     '''Static Timing Analysis class'''
     def __init__(self, std_cell, netlist):
@@ -21,11 +20,10 @@ class STA():
         self.sorted_order = []      # Sorted order of the nodes
         self.final_critical_path = []   # Final critical path
         # Calculate number of inputs and outputs for a node
-        for key in self.netlist:        
+        for key in self.netlist:       
             self.in_degree[key] = len(self.netlist[key].fanins)
             self.out_degree[key] = len(self.netlist[key].fanouts)
 
-    
     def interpolation(self, v11, v12, v21, v22, t1, t2, c1, c2, t, c):
         '''# Function to calculate 2D-interpolation'''
         term1 = v11*(c2-c)*(t2-t)
@@ -51,15 +49,15 @@ class STA():
         if output_capacitance > self.std_cell[node_type].output_load[-1]:
             list_length = len(self.std_cell[node_type].output_load)
             column1 = list_length - 2
-            column2 = list_length - 1 
+            column2 = list_length - 1
         # Find the range in between which input slews and output capacitance fits in lookup table
         for i in range(len(self.std_cell[node_type].input_slew)-1):
             if input_slew >= self.std_cell[node_type].input_slew[i] and input_slew < self.std_cell[node_type].input_slew[i+1]:
                 row1 = i
-                row2 = i+1        
+                row2 = i+1
             if output_capacitance >= self.std_cell[node_type].output_load[i] and output_capacitance < self.std_cell[node_type].output_load[i+1]:
                 column1 = i
-                column2 = i+1               
+                column2 = i+1       
         return row1, row2, column1, column2
 
     def lookup(self, node, input_slew, output_capacitance, delay=False, slew=False):
@@ -145,12 +143,12 @@ class STA():
                 output_capacitance = 0.0
                 for fanout in self.netlist[node].fanouts:
                     # If the node is not of output type, add it's standard cell's output capacitance
-                    if self.netlist[fanout].type != "OUTPUT":
-                        output_capacitance += self.std_cell[self.netlist[fanout].type].input_capacitance
-                    # If the node is of output type, add 4 times the Inverter cell's input capacitance
+                    fanout_type = self.netlist[fanout].type
+                    if fanout_type != "OUTPUT":
+                        output_capacitance += self.std_cell[fanout_type].input_capacitance
+                    # If the node is output type, add 4 times the Inverter cell's input capacitance
                     else:
                         output_capacitance += (4 * self.std_cell["INV"].input_capacitance)
-
             # Check if the node is output
             elif self.netlist[node].type == "OUTPUT":
                 # Get the first fan-in node of the node
@@ -160,10 +158,8 @@ class STA():
                 # Get the maximum of maximum output arrival time of output node, or the cell delay
                 if self.total_circuit_delay < self.netlist[fanin].max_output_arrival:
                     self.total_circuit_delay = self.netlist[fanin].max_output_arrival
-
             # calculate the required arrival time
             self.total_circuit_delay_slack = 1.1 * self.total_circuit_delay 
-
             # Iterate through neighboring nodes
             for neighbor in self.netlist[node].fanouts:
                 # Once the neighbor is visited, subtract 1 from its in_degree
@@ -171,32 +167,25 @@ class STA():
                 # If in_degree is zero, all the inputs are ready for the neighboring node, and it can be appended to the queue
                 if in_degree[neighbor] == 0:
                     queue.append(neighbor)
-        
         # Store the sorted order
         self.sorted_order = sorted_order
 
-    
-    # Function to perform backward traversal on netlist
     def backward_traversal(self):
-        
+        '''Function to perform backward traversal on netlist'''
         # Copy length of fanouts to another variable
         out_degree = self.out_degree.copy()
         # Populate output nodes to start back traversal
         queue = [node for node in out_degree if out_degree[node]==0]
-        
         # Iterate through netlist until queue length is not zero
-        while len(queue) != 0:
-            
+        while len(queue) != 0:  
             # Get the first node from queue
             node = queue.pop(0)
-            
             # Check if the node is a logical gate
             if self.netlist[node].type in self.std_cell:
                 # Calculate Slack for the node
                 self.slack[node] = self.back_traversal_arrival[node] - self.netlist[node].max_output_arrival
                 # Assign required arrival times to the fan-in nodes of the given node
-                for i in range(len(self.netlist[node].fanins)):
-                    fanin = self.netlist[node].fanins[i]
+                for i, fanin in enumerate(self.netlist[node].fanins):
                     if fanin in self.back_traversal_arrival:
                         if (self.back_traversal_arrival[fanin] > self.back_traversal_arrival[node]-self.cell_delay[node][i]):
                             self.back_traversal_arrival[fanin] = self.back_traversal_arrival[node] - self.cell_delay[node][i]
@@ -206,7 +195,6 @@ class STA():
             elif self.netlist[node].type == "INPUT":
                 # Calculate Slack for the node
                 self.slack[node] = self.back_traversal_arrival[node] - self.netlist[node].max_output_arrival
-
             # Check if the node is output
             elif self.netlist[node].type == "OUTPUT":
                 # Assign required arrival time for output node
@@ -216,15 +204,14 @@ class STA():
                 # Assign required arrival time to the fan-in node of the given node
                 fanin = self.netlist[node].fanins[0]
                 self.back_traversal_arrival[fanin] = self.back_traversal_arrival[node]
-
             # Iterate through neighboring nodes
             for neighbor in self.netlist[node].fanins:
                 # Once the neighbor is visited, subtract 1 from its out_degree
                 out_degree[neighbor] -= 1
-                # If out_degree is zero, output arrival time can be calculated for the node, and it can be appended to the queue
+                # If out_degree is zero, output arrival time can be calculated for the node,
+                #  and it can be appended to the queue
                 if out_degree[neighbor] == 0:
                     queue.append(neighbor)
-
         # Create output directory if it doesnt exist
         output_path = "../output"
         if not os.path.isdir(output_path):
@@ -339,7 +326,6 @@ def main():
             netlist = main_parser.read_ckt(path_bench)
         else:
             print(".bench file doesn't exist.")
-
     # Check if standard cell and netlist exists
     if std_cell is not None and netlist is not None:
         # Create an object of STA class, and initialize it with standard cell and netlist
