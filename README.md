@@ -3,10 +3,6 @@
 ## Mini Project 1 - Static Timing Analysis
 ## Phase 1 - Parsing netlist and lib file
 
-## Team name: Silicon Crafters
-## Team members: 1) Darshith Manjunath
-##               2) Srivatsan Srinath
-
 ### Directory:
 .
 ├── src                     # Source folder
