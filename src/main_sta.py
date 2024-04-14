@@ -20,7 +20,7 @@ class STA():
         self.sorted_order = []      # Sorted order of the nodes
         self.final_critical_path = []   # Final critical path
         # Calculate number of inputs and outputs for a node
-        for key in self.netlist:       
+        for key in self.netlist:
             self.in_degree[key] = len(self.netlist[key].fanins)
             self.out_degree[key] = len(self.netlist[key].fanouts)
 
@@ -35,16 +35,16 @@ class STA():
         value = numerator/denominator
         return value
 
-    def lookup_index(self, node, input_slew, output_capacitance):    
+    def lookup_index(self, node, input_slew, output_capacitance):
         '''Function to lookup indexes from '''
-        node_type = self.netlist[node].type        
-        # If the input slew is beyond lookup indexes, 
+        node_type = self.netlist[node].type
+        # If the input slew is beyond lookup indexes,
         # set the row1 and row2 to the last 2 rows of the lookup table
         if input_slew > self.std_cell[node_type].input_slew[-1]:
             list_length = len(self.std_cell[node_type].input_slew)
             row1 = list_length - 2
             row2 = list_length - 1
-        # If the output capacitance is beyond lookup indexes, 
+        # If the output capacitance is beyond lookup indexes,
         # set the column1 and column2 to the last 2 columns of the lookup table
         if output_capacitance > self.std_cell[node_type].output_load[-1]:
             list_length = len(self.std_cell[node_type].output_load)
@@ -57,7 +57,7 @@ class STA():
                 row2 = i+1
             if output_capacitance >= self.std_cell[node_type].output_load[i] and output_capacitance < self.std_cell[node_type].output_load[i+1]:
                 column1 = i
-                column2 = i+1       
+                column2 = i+1
         return row1, row2, column1, column2
 
     def lookup(self, node, input_slew, output_capacitance, delay=False, slew=False):
@@ -105,7 +105,7 @@ class STA():
             if self.netlist[node].type in self.std_cell:
                 for fanin in self.netlist[node].fanins:
                     self.netlist[node].input_slews.append(self.netlist[fanin].output_slew)
-                    self.netlist[node].input_arrival.append(self.netlist[fanin].max_output_arrival)  
+                    self.netlist[node].input_arrival.append(self.netlist[fanin].max_output_arrival)
                 # Calculate output capacitance for the node
                 output_capacitance = 0.0
                 for fanout in self.netlist[node].fanouts:
@@ -116,7 +116,7 @@ class STA():
                     else:
                         output_capacitance += (4 * self.std_cell["INV"].input_capacitance)
                 self.cell_delay[node] = []
-                cell_transition = []              
+                cell_transition = []
                 # Perform lookups for delay and slew
                 for input_slew in self.netlist[node].input_slews:
                     delay = self.lookup(node, input_slew, output_capacitance, delay=True)
@@ -127,16 +127,16 @@ class STA():
                         slew *= len(self.netlist[node].fanins)/2
                     # Store cell delay
                     self.cell_delay[node].append(delay)
-                    cell_transition.append(slew)              
+                    cell_transition.append(slew)
                 # Calculate arrival times for all the inputs of the node
                 for i in range(len(self.cell_delay[node])):
-                    self.netlist[node].output_arrival.append(self.cell_delay[node][i] + self.netlist[node].input_arrival[i])          
+                    self.netlist[node].output_arrival.append(self.cell_delay[node][i] + self.netlist[node].input_arrival[i])
                 # Get the maximum output arrival time
-                self.netlist[node].max_output_arrival = max(self.netlist[node].output_arrival)      
+                self.netlist[node].max_output_arrival = max(self.netlist[node].output_arrival)
                 # Get the maximum output arrival time index
-                max_arrival_out_index = self.netlist[node].output_arrival.index(self.netlist[node].max_output_arrival)     
+                max_arrival_out_index = self.netlist[node].output_arrival.index(self.netlist[node].max_output_arrival)
                 # Get the output slew using maximum output arrival time index
-                self.netlist[node].output_slew = cell_transition[max_arrival_out_index]  
+                self.netlist[node].output_slew = cell_transition[max_arrival_out_index]
             # Check if the node is input
             elif self.netlist[node].type == "INPUT":
                 # Calculate output capacitance for the node
@@ -153,13 +153,13 @@ class STA():
             elif self.netlist[node].type == "OUTPUT":
                 # Get the first fan-in node of the node
                 fanin = self.netlist[node].fanins[0]
-                # Get the maximum output arrival of first fan-in node 
+                # Get the maximum output arrival of first fan-in node
                 self.netlist[node].max_output_arrival = self.netlist[fanin].max_output_arrival
                 # Get the maximum of maximum output arrival time of output node, or the cell delay
                 if self.total_circuit_delay < self.netlist[fanin].max_output_arrival:
                     self.total_circuit_delay = self.netlist[fanin].max_output_arrival
             # calculate the required arrival time
-            self.total_circuit_delay_slack = 1.1 * self.total_circuit_delay 
+            self.total_circuit_delay_slack = 1.1 * self.total_circuit_delay
             # Iterate through neighboring nodes
             for neighbor in self.netlist[node].fanouts:
                 # Once the neighbor is visited, subtract 1 from its in_degree
@@ -177,7 +177,7 @@ class STA():
         # Populate output nodes to start back traversal
         queue = [node for node in out_degree if out_degree[node]==0]
         # Iterate through netlist until queue length is not zero
-        while len(queue) != 0:  
+        while len(queue) != 0:
             # Get the first node from queue
             node = queue.pop(0)
             # Check if the node is a logical gate
@@ -187,7 +187,7 @@ class STA():
                 # Assign required arrival times to the fan-in nodes of the given node
                 for i, fanin in enumerate(self.netlist[node].fanins):
                     if fanin in self.back_traversal_arrival:
-                        if (self.back_traversal_arrival[fanin] > self.back_traversal_arrival[node]-self.cell_delay[node][i]):
+                        if self.back_traversal_arrival[fanin] > self.back_traversal_arrival[node]-self.cell_delay[node][i]:
                             self.back_traversal_arrival[fanin] = self.back_traversal_arrival[node] - self.cell_delay[node][i]
                     else:
                         self.back_traversal_arrival[fanin] =  self.back_traversal_arrival[node] - self.cell_delay[node][i]
@@ -217,7 +217,7 @@ class STA():
         if not os.path.isdir(output_path):
             os.makedirs(output_path)
         # Create a file to store the slack information of the netlist
-        result_file_slack = open("../output/ckt_traversal.txt", "w")
+        result_file_slack = open("../output/ckt_traversal.txt", "w", encoding="utf8")
         # Print the circuit delay
         result_file_slack.write(f"Circuit delay: {(self.total_circuit_delay*1000):.5f} ps\n\n")
         result_file_slack.write("Gate slacks:\n")
