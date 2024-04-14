@@ -1,44 +1,45 @@
+'''Executes main_sta.py for all the .bench files'''
 import subprocess
 import os
 import shutil
 import time
 
 # Path to the main_sta.py script
-main_sta_path = './main_sta.py'
+MAIN_STA_PATH = './main_sta.py'
 
 # Directory containing the .bench files
-bench_dir = '../bench'
+BENCH_DIR = '../bench'
 
 # Path to the NLDM library file
-nldm_lib_path = '../sample_NLDM.lib'
+NLDM_LIB_PATH = '../sample_NLDM.lib'
 
 # Main output directory where results will be stored
-output_dir = '..//output'
+OUTPUT_DIR = '../output'
 
 # Path to the directory whose contents you want to copy
-source_dir = './output'
+SOURCE_DIR = './output'
 
 # Create the main output directory if it doesn't exist
-if not os.path.exists(output_dir):
-    os.makedirs(output_dir)
+if not os.path.exists(OUTPUT_DIR):
+    os.makedirs(OUTPUT_DIR)
 
 # List to keep track of files that showed errors during subprocess execution
 files_with_errors = []
 
-# Iterate over all files in the bench_dir directory
-for filename in os.listdir(bench_dir):
+# Iterate over all files in the BENCH_DIR directory
+for filename in os.listdir(BENCH_DIR):
     if filename.endswith('.bench'):
         # Extract the base name (without extension) to create a result directory path
         base_name = os.path.splitext(filename)[0]
-        result_dir = os.path.join(output_dir, base_name)
+        result_dir = os.path.join(OUTPUT_DIR, base_name)
 
         # Full path to the current .bench file
-        bench_path = os.path.join(bench_dir, filename)
+        bench_path = os.path.join(BENCH_DIR, filename)
 
         # Construct the command to execute
         command = [
-            'python', main_sta_path,
-            '--read_nldm', nldm_lib_path, '--read_ckt', bench_path,
+            'python', MAIN_STA_PATH,
+            '--read_nldm', NLDM_LIB_PATH, '--read_ckt', bench_path,
         ]
 
         # Execute the command within a try-except block
@@ -52,9 +53,9 @@ for filename in os.listdir(bench_dir):
             if not os.path.exists(result_dir):
                 os.makedirs(result_dir)
 
-            # Copy the contents from source_dir to result_dir
-            for item in os.listdir(source_dir):
-                s = os.path.join(source_dir, item)
+            # Copy the contents from SOURCE_DIR to result_dir
+            for item in os.listdir(SOURCE_DIR):
+                s = os.path.join(SOURCE_DIR, item)
                 d = os.path.join(result_dir, item)
                 if os.path.isdir(s):
                     shutil.copytree(s, d, dirs_exist_ok=True)  # For directories
