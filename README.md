@@ -1,4 +1,4 @@
-Static Timing Analysis
+# Static Timing Analysis
 
 ### Directory:
 ```bash
