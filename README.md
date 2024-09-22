@@ -4,7 +4,8 @@
 ```bash
 .
 ├── src                     # Source folder
-│   ├── parser_sta.py      # The python script parses through netlist and lib files.
+|   ├── execute.py          # The python script runs all the netlist required to be executed.
+│   ├── main_parser.py      # The python script parses through netlist and lib files.
 │   └── main_sta.py         # The python script performs static timing analysis and gets critical path
 ├── output                  # Output folder
 │   ├── ckt_details.txt     # Contains netlist details
