@@ -1,7 +1,4 @@
-# EEE 598 - VLSI Design Automation
-
-## Mini Project 1 - Static Timing Analysis
-## Phase 1 - Parsing netlist and lib file
+Static Timing Analysis
 
 ### Directory:
 ```bash
