@@ -4,14 +4,17 @@
 ```bash
 .
 ├── src                     # Source folder
-│   ├── parser.py           # The python script parses through netlist and lib files. 
+│   ├── parser_sta.py      # The python script parses through netlist and lib files.
+│   └── main_sta.py         # The python script performs static timing analysis and gets critical path
 ├── output                  # Output folder
 │   ├── ckt_details.txt     # Contains netlist details
+│   ├── ckt_traversal.txt   # Contains circuit delay, slack at each gate, and critical path
 │   ├── delay_LUT.txt       # Contains delays of standard cells
 │   └── slew_LUT.txt        # Contains slews of standard cells
 ├── requirements.txt        # Required python libraries
-└── README.md
+└── README.txt	 	    
 ```
+
 ### Commands:
 
 1. Change the root directory to 'src' folder to execute the 'parser.py' file.
@@ -21,16 +24,22 @@
 
 2. Command to generate circuit details output file.
 ------------------------------------------------------------
-    python3.7 parser.py --read_ckt <path/to/*.bench>
+    python3.7 parser_sta.py --read_ckt <path/to/*.bench>
 ------------------------------------------------------------
 
 3. Command to print delays of standard cells.
-------------------------------------------------------------
-    python3.7 parser.py --delays --read_nldm <path/to/*.lib>
-------------------------------------------------------------
+-----------------------------------------------------------------
+    python3.7 parser_sta.py --delays --read_nldm <path/to/*.lib>
+-----------------------------------------------------------------
 
 4. Command to print slews of standard cells.
-------------------------------------------------------------
-    python3.7 parser.py --slews --read_nldm <path/to/*.lib>
-------------------------------------------------------------
+----------------------------------------------------------------
+    python3.7 parser_sta.py --slews --read_nldm <path/to/*.lib>
+----------------------------------------------------------------
+
+5. Command to perform static timing analysis.
+----------------------------------------------------------------------------------
+    python3.7 main_sta.py --read_nldm <path/to/*.lib> --read_ckt <path/to/*.bench>
+----------------------------------------------------------------------------------
+
 
