@@ -4,6 +4,7 @@
 ## Phase 1 - Parsing netlist and lib file
 
 ### Directory:
+```bash
 .
 ├── src                     # Source folder
 │   ├── parser.py           # The python script parses through netlist and lib files. 
@@ -13,7 +14,7 @@
 │   └── slew_LUT.txt        # Contains slews of standard cells
 ├── requirements.txt        # Required python libraries
 └── README.md
-
+```
 ### Commands:
 
 1. Change the root directory to 'src' folder to execute the 'parser.py' file.
